@@ -18,24 +18,21 @@ export class UsersController extends BaseController {
   }
 
   @Post('authenticate')
-  public async authenticate(
-    req: Request,
-    res: Response
-  ): Promise<Response | undefined> {
+  public async authenticate(req: Request, res: Response): Promise<Response> {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(401).send({
+      return this.sendErrorResponse(res, {
         code: 401,
-        error: 'User not found',
+        message: 'User not found',
       });
     }
 
     if (!(await AuthService.comparePassword(password, user.password))) {
-      return res.status(401).send({
+      return this.sendErrorResponse(res, {
         code: 401,
-        error: 'different password',
+        message: 'different password',
       });
     }
 
